@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Boing.mp3" />
+    <None Remove="Cheese.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aether.Physics2D" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Boing.mp3" />
+    <Resource Include="Cheese.png" />
+    <Resource Include="Ratte.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>Ratte</CustomToolNamespace>
+    </Resource>
+  </ItemGroup>
+
+</Project>
