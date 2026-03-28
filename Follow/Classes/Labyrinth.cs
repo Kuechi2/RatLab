@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -24,6 +25,10 @@ namespace Follow
             _sizeY = sizeY;
             _fields = new FieldBlock[sizeX, sizeY];
             GenerateGrid();
+            AddMenuItem("Labyrinth laden", ()=>Load("Meinlabyrinth.lab"));
+            AddMenuItem("Labyrinth speichern", ()=>Save("Meinlabyrinth.lab"));
+
+            
         }
         private Point GridToCanvas()
         {
@@ -41,12 +46,123 @@ namespace Follow
                     FieldBlock block = new FieldBlock(x, y, 50);
                     Canvas.SetLeft(block, x * 50);
                     Canvas.SetTop(block, y * 50);
-
                     _canvas.Children.Add(block);
-                    _fields[x, y] = block; // Im internen Grid speichern
+                    _fields[x, y] = block; 
                 }
             }
         }
+        public void Save(string path)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(path))
+                {
+                    writer.WriteLine($"{_sizeX},{_sizeY}");
+                    for (int y = 0; y < _sizeY; y++)
+                    {
+                        string line = "";
+                        for (int x = 0; x < _sizeX; x++)
+                        {
+                            line += (_fields[x, y].IsWall ? "1" : "0");
+                            if (x < _sizeX - 1) line += ",";
+                        }
+                        writer.WriteLine(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Nicht gespeichert. Fehler: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Load(string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show("Datei nicht gefunden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    // Read dimensions
+                    string dimensionsLine = reader.ReadLine();
+                    if (string.IsNullOrEmpty(dimensionsLine)) return;
+                    string[] dimensions = dimensionsLine.Split(',');
+                    if (dimensions.Length != 2) return;
+                    int loadedSizeX = int.Parse(dimensions[0]);
+                    int loadedSizeY = int.Parse(dimensions[1]);
+                    if (loadedSizeX != _sizeX || loadedSizeY != _sizeY)
+                    {
+                        MessageBox.Show($"Das gespeicherte Labyrinth hat eine Größe von {loadedSizeX}, {loadedSizeY}. ", "Falsche Größe des Labyrinths",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    for (int y = 0; y < _sizeY; y++)
+                    {
+                        string line = reader.ReadLine();
+                        if (string.IsNullOrEmpty(line)) break;
+
+                        string[] wallValues = line.Split(',');
+                        for (int x = 0; x < _sizeX && x < wallValues.Length; x++)
+                        {
+                            bool isWall = wallValues[x] == "1";
+                            if (_fields[x, y].IsWall != isWall)
+                            {
+                                _fields[x, y].IsWall = isWall;
+                                _fields[x, y]._rect.Fill = isWall ? Brushes.DarkGray : Brushes.Transparent;
+                                _fields[x, y]._rect.Stroke = isWall ? Brushes.Black : Brushes.LightBlue;
+                            }
+                        }
+                    }
+                }
+                Reset();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Nicht geladen. Fehler: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        public void AddMenuItem(string header, System.Action action)
+        {
+            _canvas.Dispatcher.Invoke(() =>
+            {
+                var window = Window.GetWindow(_canvas);
+                if (window == null) return;
+                var hauptMenuItem = window.FindName("Hauptmenu") as MenuItem;
+                if (hauptMenuItem != null)
+                {
+                    var mi = new MenuItem { Header = header };
+                    mi.Click += (_, __) => action();
+                    hauptMenuItem.Items.Add(mi);
+                    return;
+                }
+                var menu = FindChild<Menu>(window);
+                if (menu != null)
+                {
+                    var mi = new MenuItem { Header = header };
+                    mi.Click += (_, __) => action();
+                    menu.Items.Add(mi);
+                } 
+            });
+        }
+        private static T? FindChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typed) return typed;
+                var result = FindChild<T>(child);
+                if (result != null) return result;
+            }
+            return null;
+        }
+
         public bool Vor()
         {
             Point APos = GridPos;
@@ -68,9 +184,7 @@ namespace Follow
                 default: Richtung = 0; break;
             }
             LastPos.Push(APos);
-            
             _fields[(int)APos.X, (int)APos.Y].IsVisited();
-            
             Point CPos = GridToCanvas();
             rat.GeheZu(CPos.X, CPos.Y);
             return true;

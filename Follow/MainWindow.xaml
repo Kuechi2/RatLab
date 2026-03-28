@@ -39,13 +39,25 @@
             <Button Content="Gelb" 
                     Click="Click_Gelb"
                     Width="80" Height="40" Margin="5" Background="#FFFBFF00" Cursor="Hand" FontWeight="Bold" FontSize="16" Foreground="#FFB1A000"/>
-            <local:DraggableNumericKnob x:Name="LinkeZahl" Value="10.0" Step="0.01"/>
+            <local:DraggableNumericKnob x:Name="LinkeZahl" Value="10.0" Step="0.01" Width="50"/>
             <Border BorderBrush="Black" BorderThickness="0" Width="5"/>
-            <local:DraggableNumericKnob x:Name="RechteZahl" Value="10.0" Step="0.01"/>
+            <local:DraggableNumericKnob x:Name="RechteZahl" Value="10.0" Step="0.01" Width="50"/>
             <Border BorderBrush="Black" BorderThickness="0" Width="5"/>
+            <Menu Height="27" FontSize="18" Background="{x:Null}">
+                <MenuItem x:Name="Hauptmenu" Header="Menu" Foreground="Black" Margin="0,0,5,0" Height="28">
+                    <MenuItem.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFFF75CF"/>
+                            <GradientStop Color="#FFBA56FF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </MenuItem.Background>
+                </MenuItem>
+
+            </Menu>
             <Button Content="?" FontSize="20" Width="19" Height="30" Click="Button_Click" Background="#FFE900FF" Foreground="#FFD70000" FontWeight="Bold"/>
-            
-        </StackPanel><Label Content="Wissen oder Ratten?" Foreground="#FFFF51E2" FontSize="28" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Bold"/>
+
+        </StackPanel>
+        <Label Content="Wissen oder Ratten?" Foreground="#FFFF51E2" FontSize="28" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Bold"/>
 
 
         <!-- Zeichenfläche - WICHTIG: Der Name MUSS mit dem Code übereinstimmen! -->

@@ -10,8 +10,7 @@ namespace Follow
     {
         [DllImport("user32.dll")]
         private static extern bool SetCursorPos(int x, int y);
-
-        private Point _lockedScreenPos;  // Bildschirmposition, auf die wir die Maus zurücksetzen
+        private Point _lockedScreenPos;
         private bool _isDragging;
 
         public static readonly DependencyProperty ValueProperty =
@@ -61,16 +60,11 @@ namespace Follow
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             _isDragging = true;
-
-            // Absolute Bildschirmposition merken (zum Zurücksetzen)
             Point controlPos = this.PointToScreen(new Point(ActualWidth / 2, ActualHeight / 2));
             _lockedScreenPos = controlPos;
-
-            // Maus zur Mitte des Controls setzen
             SetCursorPos((int)_lockedScreenPos.X, (int)_lockedScreenPos.Y);
-
             CaptureMouse();
-            Cursor = Cursors.None;  // Maus verstecken
+            Cursor = Cursors.None;
             e.Handled = true;
             base.OnMouseLeftButtonDown(e);
         }
