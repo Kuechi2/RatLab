@@ -1,0 +1,3 @@
+Hier kannst du dir das Rattenlabor in seiner jeweils aktuellen Fassung herunterladen. Ein PDF mit Aufgaben ist auch dabei. Wenn du noch gar keine Programmiererfahrung hast und nie mit Visual Studio (Code) gearbeitet hast, 
+guckst du hier: https://learn.microsoft.com/de-de/visualstudio/install/install-visual-studio?view=visualstudio
+Wenn du schon etwas Erfahrung egsammelt hast, kannst du entweder das Git als Zip herunterladen und in deinen repos-Ordner entpacken oder
